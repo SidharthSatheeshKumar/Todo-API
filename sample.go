@@ -64,12 +64,6 @@ func userlogin(c echo.Context) error {
 	// Check whether the password of the user is correct by cross checking the password in the database
 
 	var originalPassword string
-	// db, err := sql.Open("mysql", "root:root@(127.0.0.1:3307)/webapp?parseTime=true")
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// 	return c.String(http.StatusInternalServerError, "Server is not connected with the database")
-
-	// }
 
 	selectQuery := db.QueryRow("SELECT password FROM user WHERE username = ?", usr.Username).Scan(&originalPassword)
 	if selectQuery != nil {
@@ -124,16 +118,9 @@ func newuser(c echo.Context) error {
 
 	password := usr.Password
 
-	fmt.Println("username is",username)
+	fmt.Println("username is", username)
 
 	// Connecting with the database
-
-	// db, err := sql.Open("mysql", "root:root@(127.0.0.1:3307)/webapp?parseTime=true")
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// 	return c.String(http.StatusInternalServerError, "Server is not connected with the database")
-
-	// }
 
 	// check whether the password is not empty and the username is not duplicate
 
@@ -192,12 +179,7 @@ func todoInsert(c echo.Context) error {
 	if userItem == "" {
 		return c.String(404, "Invalid content")
 	}
-	// db, err := sql.Open("mysql", "root:root@(127.0.0.1:3307)/webapp?parseTime=true")
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// 	return c.String(http.StatusInternalServerError, "Server is not connected with the database")
 
-	// }
 	var userid int
 	status := "undone"
 	getHeader := c.Request().Header.Get("api-key")
@@ -260,12 +242,7 @@ func deleteTodo(c echo.Context) error {
 	}
 	err = json.Unmarshal(req_body, &taskid)
 	task := taskid.Taskid
-	// db, err := sql.Open("mysql", "root:root@(127.0.0.1:3307)/webapp?parseTime=true")
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// 	return c.String(http.StatusInternalServerError, "Server is not connected with the database")
 
-	// }
 	deleteQuery := "DELETE FROM todolist WHERE taskid=?"
 	execute, err := db.Exec(deleteQuery, task)
 	if err != nil {
@@ -291,12 +268,7 @@ func updateStatus(c echo.Context) error {
 
 	}
 	err = json.Unmarshal(req_body, &statusObj)
-	// db, err := sql.Open("mysql", "root:root@(127.0.0.1:3307)/webapp?parseTime=true")
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// 	return c.String(http.StatusInternalServerError, "Server is not connected with the database")
 
-	// }
 	updateQuery := "UPDATE todolist SET status=? where taskid=? "
 	result, err := db.Exec(updateQuery, statusObj.Status, statusObj.Taskid)
 	if err != nil {
@@ -326,7 +298,7 @@ func changeTaskname(c echo.Context) error {
 
 	}
 	query := "UPDATE  todolist SET item=?,updated_date=now() WHERE taskid=?"
-	execute, err := db.Exec(query, taskname,taskid)
+	execute, err := db.Exec(query, taskname, taskid)
 	if err != nil {
 		fmt.Println(err.Error())
 		return c.String(http.StatusInternalServerError, "cannot be updated ")
@@ -383,7 +355,7 @@ func main() {
 	todoMux.GET("", presentTodo)
 	todoMux.DELETE("", deleteTodo)
 	todoMux.PUT("", updateStatus)
-	todoMux.PUT("/:taskid",changeTaskname)
+	todoMux.PUT("/:taskid", changeTaskname)
 
 	obj.Start(":8080")
 
